@@ -1,8 +1,9 @@
 package edu.ppsm.lab6
-
 import android.os.Bundle
 import android.view.View
+import android.view.animation.AnimationUtils
 import android.widget.EditText
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -10,7 +11,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(),CRecyclerViewAdapter.IItemClickListener{
     private val dbMaterial = CDBMaterial(this)
     private var recyclerView:RecyclerView?=null
     private var adapter: CRecyclerViewAdapter?=null
@@ -36,7 +37,21 @@ class MainActivity : AppCompatActivity() {
             (findViewById<EditText>(R.id.editStandard)).text.toString() )
             adapter!!.swapCursor(dbMaterial.materials)
             recyclerView?.adapter!!.notifyItemInserted(adapter!!.itemCount)
-            //recyclerView?.scheduleLayoutAnimation()
+
+            adapter!!.setClickListener(this)
+            recyclerView?.layoutAnimation=AnimationUtils.loadLayoutAnimation(
+                this, R.anim.layout_animation_fall_down
+            )
+            recyclerView?.scheduleLayoutAnimation()
         }
+
+    }
+    override fun onItemClick(view: View?, position: Int) {
+        val item = adapter!!.getItem(position)
+        Toast.makeText(
+            this, "IDX=%d, dane: %s, %s, %s".format(
+                position,item!![TYPE_ID],item[TYPE_TYPENAME],item[TYPE_STANDARD]),
+            Toast.LENGTH_SHORT
+        ).show()
     }
 }
